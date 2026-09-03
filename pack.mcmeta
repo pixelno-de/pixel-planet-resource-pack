@@ -1,0 +1,10 @@
+{
+  "pack": {
+    "description": "For Pixel Planet",
+    "min_format": [
+      84,
+      0
+    ],
+    "max_format": 88
+  }
+}

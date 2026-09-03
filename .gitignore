@@ -1,0 +1,12 @@
+target/
+*.jar
+
+.idea/
+.vscode/
+*.iml
+
+__pycache__/
+*.pyc
+
+*secrets*
+*.env
