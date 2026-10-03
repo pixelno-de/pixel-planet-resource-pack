@@ -1,0 +1,21 @@
+name: Pack
+on:
+  release:
+    types: [published]
+permissions:
+  contents: write
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - env:
+          TAG: ${{ github.event.release.tag_name }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ZIP="Pixel-Planet-Resource-Pack-PR${TAG#pre-release-}.zip"
+          zip -r -X "$ZIP" assets pack.mcmeta
+          gh release upload "$TAG" "$ZIP"
+          echo "SHA-1: $(sha1sum "$ZIP" | cut -d' ' -f1)" >> "$GITHUB_STEP_SUMMARY"
