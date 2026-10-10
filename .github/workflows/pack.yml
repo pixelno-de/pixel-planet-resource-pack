@@ -2,6 +2,7 @@ name: Pack
 on:
   release:
     types: [published]
+  workflow_dispatch:
 permissions:
   contents: write
 jobs:
@@ -15,7 +16,19 @@ jobs:
           TAG: ${{ github.event.release.tag_name }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          ZIP="Pixel-Planet-Resource-Pack-PR${TAG#pre-release-}.zip"
+          if [ -z "$TAG" ]; then
+            TAG=$(gh release list --exclude-drafts --limit 1 --json tagName --jq '.[0].tagName')
+            TITLE=$(gh release view "$TAG" --json name --jq .name)
+            git config user.name DragonPixels
+            git config user.email 42192045+DragonPixels@users.noreply.github.com
+            git tag -f -a "$TAG" -m "$TITLE"
+            git push -f origin "refs/tags/$TAG"
+          fi
+          case "$TAG" in
+            pre-release-*) NAME="PR${TAG#pre-release-}" ;;
+            *) NAME="R${TAG#release-}" ;;
+          esac
+          ZIP="Pixel-Planet-Resource-Pack-$NAME.zip"
           zip -r -X "$ZIP" assets pack.mcmeta
-          gh release upload "$TAG" "$ZIP"
+          gh release upload "$TAG" "$ZIP" --clobber
           echo "SHA-1: $(sha1sum "$ZIP" | cut -d' ' -f1)" >> "$GITHUB_STEP_SUMMARY"
