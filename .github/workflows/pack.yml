@@ -19,7 +19,7 @@ jobs:
           if [ -z "$TAG" ]; then
             TAG=$(gh release list --exclude-drafts --limit 1 --json tagName --jq '.[0].tagName')
             TITLE=$(gh release view "$TAG" --json name --jq .name)
-            git config user.name DragonPixels
+            git config user.name Brendan
             git config user.email 42192045+DragonPixels@users.noreply.github.com
             git tag -f -a "$TAG" -m "$TITLE"
             git push -f origin "refs/tags/$TAG"
